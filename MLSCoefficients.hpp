@@ -24,6 +24,11 @@ using member_type = Kokkos::TeamPolicy<>::member_type;
 
 //int max_supports = 200;
 
+KOKKOS_INLINE_FUNCTION
+double func(coord& p){
+    return p1.x * p1.x + p1.y * p1.y;
+}    
+
 
 // polynomial basis vector 
 KOKKOS_INLINE_FUNCTION
@@ -54,7 +59,7 @@ double rbf(double r_sq, double rho_sq){
     }
 
     return phi;
-}
+
 
 // create vandermondeMatrix
 KOKKOS_INLINE_FUNCTION
