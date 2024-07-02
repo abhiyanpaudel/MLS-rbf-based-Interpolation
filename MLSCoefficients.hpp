@@ -171,7 +171,7 @@ void forward_substitution(member_type team, RealMatViewRight lower, RealMatViewR
 KOKKOS_INLINE_FUNCTION
 void backward_substitution(member_type team, RealMatViewRight forward_matrix, RealMatViewRight lower, RealMatViewRight mat_inverse){
   int N = lower.extent(0);
-  Kokkos::parallel_for(Kokkos::TeamThreadRange(team, N), [=](const int& i) {
+  Kokkos::parallel_for(Kokkos::TeamThreadRange(team, N), KOKKOS_LAMBDA(const int i) {
       mat_inverse(N - 1, i) = forward_matrix(N - 1, i) / lower(N - 1, N - 1);
       for (int j = N - 2; j >= 0; --j) {
           mat_inverse(j, i) = forward_matrix(j, i);
@@ -200,7 +200,7 @@ void cholesky_decomposition(member_type team, RealMatViewRight matrix, RealMatVi
 
 //        team.team_barrier();
 
-        Kokkos::parallel_for(Kokkos::TeamVectorRange(team, j+1, N), [=] (int i) {
+        Kokkos::parallel_for(Kokkos::TeamVectorRange(team, j+1, N), KOKKOS_LAMBDA(int i) {
             double inner_sum = 0;
             for (int k = 0; k < j; ++k) {
                 inner_sum += lower(i,k) * lower(j,k);
@@ -211,14 +211,6 @@ void cholesky_decomposition(member_type team, RealMatViewRight matrix, RealMatVi
 
 //        team.team_barrier();
     }
-}
-
-
-
-KOKKOS_INLINE_FUNCTION double distance(const Coord& p1, const Coord& p2) {
-    double dx = p1.x - p2.x;
-    double dy = p1.y - p2.y;
-    return dx * dx + dy * dy;
 }
 
 #endif 
