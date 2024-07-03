@@ -6,15 +6,17 @@
 #include<Kokkos_Atomic.hpp>
 
 
-struct TargetToSourceMap {
-    IntVecView source_ids;
-};
+#define PI_M 3.14159265358979323846 
 
 // alias for kokkos view with right memory layout 
 
+#ifdef KOKKOS_ENABLE_CUDA 
 using RealMatViewRight =  Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::CudaSpace>;
 using RealMatView = Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::CudaUVMSpace>;
-
+#else
+using RealMatViewRight =  Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::HostSpace>;
+using RealMatView = Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::HostSpace>;
+#endif 
 
 // alias for range policy, team policy and team policy member type
 
@@ -25,9 +27,23 @@ using member_type = Kokkos::TeamPolicy<>::member_type;
 //int max_supports = 200;
 
 KOKKOS_INLINE_FUNCTION
-double func(coord& p){
-    return p1.x * p1.x + p1.y * p1.y;
+double func(Coord& p){
+    //double mu_x = 0.5;
+    //double mu_y = 0.5;
+    //double sigma_x = 0.1; 
+    //double sigma_y = 0.1;
+    //double normalization = 1.0 / (2.0 * PI_M * sigma_x * sigma_y);
+    //// Calculate the exponent part
+    //double exponent = -0.5 * ((std::pow(p.x - mu_x, 2) / std::pow(sigma_x, 2)) +
+    //                          (std::pow(p.y - mu_y, 2) / std::pow(sigma_y, 2)));
+    //// Calculate the Gaussian value
+    //double Z = normalization * std::exp(exponent);
+    auto x = p.x*PI_M*2;
+    auto y = p.y*PI_M*2;
+    double Z = sin(x)*sin(y);
+    return Z;
 }    
+
 
 
 // polynomial basis vector 
@@ -59,7 +75,7 @@ double rbf(double r_sq, double rho_sq){
     }
 
     return phi;
-
+}
 
 // create vandermondeMatrix
 KOKKOS_INLINE_FUNCTION
@@ -102,7 +118,7 @@ void MatMatMul(member_type team, RealMatViewRight moment_matrix, RealMatViewRigh
     Kokkos::parallel_for(Kokkos::ThreadVectorRange(team, M), [=](const int i) {
         Kokkos::parallel_for(Kokkos::TeamThreadRange(team, N), [=](const int j) {
             double sum = 0.0;
-            Kokkos::parallel_reduce(Kokkos::ThreadVectorRange(team, K), [=](const int k, double lsum) {
+            Kokkos::parallel_reduce(Kokkos::ThreadVectorRange(team, K), [=](const int k, double& lsum) {
                 lsum += pt_phi(i,k) * vandermonde(k,j);
             }, sum);
             moment_matrix(i,j) = sum;
@@ -118,8 +134,8 @@ void MatVecMul(member_type team, RealVecView vector, RealMatViewRight matrix, Re
     int N = matrix.extent(1);
     Kokkos::parallel_for(Kokkos::TeamThreadRange(team,N),[=](const int i){
        double sum = 0; 
-       Kokkos::parallel_reduce(Kokkos::ThreadVectorRange(team, M), [=] (const int j, double lsum){
-        lsum += vector(j) * matrix(i,j);
+       Kokkos::parallel_reduce(Kokkos::ThreadVectorRange(team, M), [=] (const int j, double& lsum){
+        lsum += vector(j) * matrix(j,i);
         
       },sum);
       result(i) = sum;
@@ -130,7 +146,7 @@ void MatVecMul(member_type team, RealVecView vector, RealMatViewRight matrix, Re
 
 // dot product 
 KOKKOS_INLINE_FUNCTION
-void dot_product(member_type team, RealVecView result_sub, RealVecView exactSupportValues_sub,double target_value){
+void dot_product(member_type team, RealVecView result_sub, RealVecView exactSupportValues_sub,double& target_value){
   int N = result_sub.extent(0); 
    for ( int j = 0; j < N; ++j){
       target_value += result_sub(j) * exactSupportValues_sub(j);
@@ -157,41 +173,9 @@ void PtphiPMatrix(RealMatViewRight moment_matrix, member_type team, RealMatViewR
 }
 
 
-KOKKOS_INLINE_FUNCTION
-void forward_substitution(member_type team, RealMatViewRight lower, RealMatViewRight forward_matrix){
-  int N = lower.extent(0);
-  Kokkos::parallel_for(Kokkos::TeamThreadRange(team, N), [=](const int& i) {
-      forward_matrix(i, i) = 1.0 / lower(i, i);
-      for (int j = i + 1; j < N; ++j) {
-          forward_matrix(j, i) = 0.0; // Initialize to zero
-          for (int k = 0; k < j; ++k) {
-              forward_matrix(j, i) -= lower(j, k) * forward_matrix(k, i);
-          }
-          forward_matrix(j, i) /= lower(j,j);
-      }
-  });
-    
-}
 
 KOKKOS_INLINE_FUNCTION
-void backward_substitution(member_type team, RealMatViewRight forward_matrix, RealMatViewRight lower, RealMatViewRight mat_inverse){
-  int N = lower.extent(0);
-  Kokkos::parallel_for(Kokkos::TeamThreadRange(team, N), KOKKOS_LAMBDA(const int i) {
-      mat_inverse(N - 1, i) = forward_matrix(N - 1, i) / lower(N - 1, N - 1);
-      for (int j = N - 2; j >= 0; --j) {
-          mat_inverse(j, i) = forward_matrix(j, i);
-          for (int k = j + 1; k < N; ++k) {
-              mat_inverse(j, i) -= lower(j, k) * mat_inverse(k, i);
-          }
-          mat_inverse(j, i) /= lower(j, j);
-      }
-  });
-
-}
-
-
-KOKKOS_INLINE_FUNCTION
-void cholesky_decomposition(member_type team, RealMatViewRight matrix, RealMatViewRight lower) {
+void inverse_matrix(member_type team, RealMatViewRight matrix, Kokkos::View<double**> lower, Kokkos::View<double**> forward_matrix, Kokkos::View<double**> solution) {
     int N = matrix.extent(0); 
 
     for (int j = 0; j < N; ++j) {
@@ -203,9 +187,9 @@ void cholesky_decomposition(member_type team, RealMatViewRight matrix, RealMatVi
             lower(j,j) = sqrt(matrix(j,j) - sum);
         });
 
-//        team.team_barrier();
+        team.team_barrier();
 
-        Kokkos::parallel_for(Kokkos::TeamVectorRange(team, j+1, N), KOKKOS_LAMBDA(int i) {
+        Kokkos::parallel_for(Kokkos::TeamVectorRange(team, j+1, N), [=] (int i) {
             double inner_sum = 0;
             for (int k = 0; k < j; ++k) {
                 inner_sum += lower(i,k) * lower(j,k);
@@ -214,8 +198,39 @@ void cholesky_decomposition(member_type team, RealMatViewRight matrix, RealMatVi
             lower(j,i) = lower(i ,j);
       });
 
-//        team.team_barrier();
+        team.team_barrier();
     }
+
+Kokkos::parallel_for(Kokkos::TeamThreadRange(team, N), [=](const int i) {
+    forward_matrix(i, i) = 1.0 / lower(i, i);
+    for (int j = i + 1; j < N; ++j) {
+        forward_matrix(j, i) = 0.0; // Initialize to zero
+        for (int k = 0; k < j; ++k) {
+            forward_matrix(j, i) -= lower(j, k) * forward_matrix(k, i);
+        }
+        forward_matrix(j, i) /= lower(j,j);
+    }
+});
+
+team.team_barrier();
+
+Kokkos::parallel_for(Kokkos::TeamThreadRange(team, N), [=](const int i) {
+    solution(N - 1, i) = forward_matrix(N - 1, i) / lower(N - 1, N - 1);
+    for (int j = N - 2; j >= 0; --j) {
+        solution(j, i) = forward_matrix(j, i);
+        for (int k = j + 1; k < N; ++k) {
+            solution(j, i) -= lower(j, k) * solution(k, i);
+        }
+        solution(j, i) /= lower(j, j);
+    }
+});
+
 }
+
+
+
+
+
+
 
 #endif 

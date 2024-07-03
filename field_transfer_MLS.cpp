@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
 	fprintf(stderr, "Usage: %s <input mesh>\n", argv[0]);
 	return 0;
     }
-
+    
     const auto rank = lib.world()->rank();
     const auto inmesh_source = argv[1];
     const auto inmesh_target = argv[2];
@@ -60,15 +60,42 @@ int main(int argc, char** argv) {
     const auto& source_coordinates = source_mesh.coords();
     const auto& target_coordinates = target_mesh.coords();
 
-    
     SupportResults support =  searchNeighbors(source_mesh, target_mesh, cutoffDistance);
-
     
-    auto target_values = mls_interpolation(source_coordinates, target_coordinates, support, dim, cutoffDistance);
+    auto approx_target_values = mls_interpolation(source_coordinates, target_coordinates, support, dim, cutoffDistance);
 
-    target_mesh.add_tag<Real>(0,"target_field", 1 , target_values);
+
+    Write<LO> supports_per_target( target_mesh.nverts(), 0, "number of supports in each target point");
     
-    vtk::write_parallel("approximated field values in target mesh", &target_mesh, dim);
+
+    Kokkos::parallel_for(target_mesh.nverts(), KOKKOS_LAMBDA(int i){
+	   int start = support.supports_ptr[i];
+	   int end = support.supports_ptr[i+1];
+	   int num_supports = end - start;
+	   supports_per_target[i] = num_supports;
+    });
+
+    DevicePoints target_points;
+	 
+    target_points.coordinates = DevicePointsViewType("Number of local source supports", target_mesh.nverts());
+     for (int j = 0; j < target_mesh.nverts(); ++j){
+	target_points.coordinates(j).x = target_coordinates[j * dim];
+        target_points.coordinates(j).y = target_coordinates[j * dim + 1];
+
+     }
+
+    Write<Real> exact_target_values( target_mesh.nverts(), 0, "exact target values");
+			
+    Kokkos::parallel_for(target_mesh.nverts(), KOKKOS_LAMBDA(int i){
+	    exact_target_values[i] = func(target_points.coordinates(i));
+    });
+	
+    target_mesh.add_tag<Real>(0,"target_field_approx", 1 , approx_target_values);
+    target_mesh.add_tag<Real>(0,"target_field_exact", 1 , exact_target_values);
+    target_mesh.add_tag<LO>(0,"num_supports", 1 , supports_per_target);
+    
+    
+    vtk::write_parallel("field_values", &target_mesh, dim);
 
     return 0;
 }
