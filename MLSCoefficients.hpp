@@ -38,8 +38,8 @@ double func(Coord& p){
     //                          (std::pow(p.y - mu_y, 2) / std::pow(sigma_y, 2)));
     //// Calculate the Gaussian value
     //double Z = normalization * std::exp(exponent);
-    auto x = p.x*PI_M*2;
-    auto y = p.y*PI_M*2;
+    auto x = (p.x - 0.5) * PI_M * 2;
+    auto y = (p.y - 0.5) * PI_M * 2;
     double Z = sin(x)*sin(y);
     return Z;
 }    
