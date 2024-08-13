@@ -1,17 +1,7 @@
 
-// include "MLSCoefficients.hpp"
 #include <cstdlib>
-
-
-// #include <mpi.h>
-// #include <Kokkos_Core.hpp>
-#include "points.hpp"
-#include "MLSCoefficients.hpp"
 #include "MLSInterpolation.hpp"
-#include "adj_search.hpp"
-
-// #include <iostream>
-// #include "clockcycle.h"
+#include <iostream>
 
 using namespace Omega_h;
 using namespace pcms;
@@ -55,6 +45,8 @@ int main(int argc, char** argv) {
     SupportResults support =  searchNeighbors(source_mesh, target_mesh, cutoffDistance);
     
     auto approx_target_values = mls_interpolation(source_coordinates, target_coordinates, support, dim, cutoffDistance);
+    
+    auto host_approx_target_values = HostRead<Real>(approx_target_values);
 
 
     Write<LO> supports_per_target( target_mesh.nverts(), 0, "number of supports in each target point");
@@ -67,21 +59,23 @@ int main(int argc, char** argv) {
 	   supports_per_target[i] = num_supports;
     });
 
-    DevicePoints target_points;
+    Points target_points;
 	 
-    target_points.coordinates = DevicePointsViewType("Number of local source supports", target_mesh.nverts());
-     for (int j = 0; j < target_mesh.nverts(); ++j){
+    target_points.coordinates = PointsViewType("Number of local source supports", target_mesh.nverts());
+     Kokkos::parallel_for("target points", target_mesh.nverts(), KOKKOS_LAMBDA(int j){
 	target_points.coordinates(j).x = target_coordinates[j * dim];
         target_points.coordinates(j).y = target_coordinates[j * dim + 1];
 
-     }
+     });
 
     Write<Real> exact_target_values( target_mesh.nverts(), 0, "exact target values");
 			
     Kokkos::parallel_for(target_mesh.nverts(), KOKKOS_LAMBDA(int i){
 	    exact_target_values[i] = func(target_points.coordinates(i));
     });
-	
+
+    auto host_exact_target_values = HostRead<Real>(exact_target_values); 
+
     target_mesh.add_tag<Real>(0,"target_field_approx", 1 , approx_target_values);
     target_mesh.add_tag<Real>(0,"target_field_exact", 1 , exact_target_values);
     target_mesh.add_tag<LO>(0,"num_supports", 1 , supports_per_target);
@@ -89,6 +83,10 @@ int main(int argc, char** argv) {
     
     vtk::write_parallel("field_values", &target_mesh, dim);
 
+    std::cout <<"Exact Values" << "\t" << "Interpolated Values" <<"\n"<< std::endl;
+    for (int i = 0; i < host_approx_target_values.size(); ++i){
+	std::cout <<host_exact_target_values[i] << "\t" << host_approx_target_values[i] << std::endl;
+    }
     return 0;
 }
 

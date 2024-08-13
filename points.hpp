@@ -11,40 +11,25 @@ struct Coord{
 };
 
 
-#ifdef KOKKOS_ENABLE_CUDA
-using DevicePointsViewType = Kokkos::View<Coord*, Kokkos::CudaSpace>;
-using HostDevicePointsViewType = Kokkos::View<Coord*, Kokkos::CudaUVMSpace>;
-using DeviceRealVecView = Kokkos::View<double*, Kokkos::CudaUVMSpace>;
-using IntVecView = Kokkos::View<int*, Kokkos::CudaSpace>;
-using RealVecView = Kokkos::View<double*, Kokkos::CudaSpace>;
-#else
-using DevicePointsViewType = Kokkos::View<Coord*, Kokkos::HostSpace>;
-using HostDevicePointsViewType = Kokkos::View<Coord*, Kokkos::HostSpace>;
-using DeviceRealVecView = Kokkos::View<double*, Kokkos::HostSpace>;
-using IntVecView = Kokkos::View<int*, Kokkos::HostSpace>;
-using RealVecView = Kokkos::View<double*, Kokkos::HostSpace>;
-#endif
+using range_policy = typename Kokkos::RangePolicy<>;
+using team_policy = typename Kokkos::TeamPolicy<>;
+using member_type = typename Kokkos::TeamPolicy<>::member_type;
 
-using HostPointsViewType = Kokkos::View<Coord*, Kokkos::HostSpace>;
-using HostRealVecView = Kokkos::View<double*, Kokkos::HostSpace>;
-struct HostPoints{
-  HostPointsViewType coordinates;
 
-};
+// alias for scratch view 
+using ScratchSpace = typename Kokkos::DefaultExecutionSpace::scratch_memory_space;
 
-struct DevicePoints{
-  DevicePointsViewType coordinates;
+using ScratchMatView = typename Kokkos::View<double**, Kokkos::LayoutRight, ScratchSpace, Kokkos::MemoryTraits<Kokkos::Unmanaged>>;
+using ScratchVecView = typename Kokkos::View<double*, ScratchSpace, Kokkos::MemoryTraits<Kokkos::Unmanaged>>;
+
+using PointsViewType = Kokkos::View<Coord*>;
+
+
+
+struct Points{
+  PointsViewType coordinates;
 
 };
-
-
-struct HostDevicePoints{
-  HostDevicePointsViewType coordinates;
-
-};
-
-
-
 
 
 
