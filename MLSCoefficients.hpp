@@ -3,23 +3,9 @@
 
 #include "points.hpp"
 #include <cmath>
-#include<Kokkos_Atomic.hpp>
 
 
 #define PI_M 3.14159265358979323846 
-
-// alias for kokkos view with right memory layout 
-
-//#ifdef KOKKOS_ENABLE_CUDA 
-//using RealMatViewRight =  typename Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::CudaSpace>;
-//using RealMatView = typename Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::CudaUVMSpace>;
-//#else
-//using RealMatViewRight =  typename Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::HostSpace>;
-//using RealMatView = typename Kokkos::View<double**, Kokkos::LayoutRight, Kokkos::HostSpace>;
-//#endif 
-//
-// alias for range policy, team policy and team policy member type
-
 
 
 KOKKOS_INLINE_FUNCTION
