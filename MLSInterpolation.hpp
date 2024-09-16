@@ -3,7 +3,7 @@
 
 #include "points.hpp"
 #include "MLSCoefficients.hpp"
-#include "adj_search.hpp"
+#include "adj_search_dega2.hpp"
 
 using namespace Omega_h;
 using namespace pcms;
@@ -186,7 +186,6 @@ Write<Real> mls_interpolation(const Reals source_coordinates, const Reals target
 	
    }); 
 
-        printf("1\n");
 	return approx_target_values;
 }
 

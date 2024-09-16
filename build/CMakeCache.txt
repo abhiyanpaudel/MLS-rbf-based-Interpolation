@@ -14,8 +14,11 @@
 # EXTERNAL cache entries
 ########################
 
+//The directory containing a CMake configuration file for ADIOS2.
+ADIOS2_DIR:PATH=/lore/mersoj2/laces-software/build/adios2/install/lib64/cmake/adios2
+
 //No help, variable specified on the command line.
-ADIOS2_ROOT:UNINITIALIZED=/lore/paudea/build/adios2/install/
+ADIOS2_ROOT:UNINITIALIZED=/lore/mersoj2/laces-software/build/adios2/install/
 
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
@@ -40,6 +43,8 @@ CMAKE_CXX_COMPILER_AR:FILEPATH=/opt/scorec/spack/rhel9/v0201_4/install/linux-rhe
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
 CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/opt/scorec/spack/rhel9/v0201_4/install/linux-rhel9-x86_64/gcc-7.4.0/gcc-12.3.0-iil3lnovyknyxf7pec36wljem3fntjd5/bin/gcc-ranlib
+
+CMAKE_CXX_EXTENSIONS:BOOL=OFF
 
 //Flags used by the CXX compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=
@@ -212,14 +217,79 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//Path to a program.
+Kokkos_COMPILE_LAUNCHER:FILEPATH=/lore/mersoj2/laces-software/build/ADA89/kokkos/install/bin/kokkos_launch_compiler
+
+//The directory containing a CMake configuration file for Kokkos.
+Kokkos_DIR:PATH=/lore/mersoj2/laces-software/build/ADA89/kokkos/install/lib64/cmake/Kokkos
+
+//Path to a program.
+Kokkos_NVCC_WRAPPER:FILEPATH=/lore/mersoj2/laces-software/build/ADA89/kokkos/install/bin/nvcc_wrapper
+
 //No help, variable specified on the command line.
-Kokkos_ROOT:UNINITIALIZED=/lore/paudea/build/ADA89/kokkos/install/
+Kokkos_ROOT:UNINITIALIZED=/lore/mersoj2/laces-software/build/ADA89/kokkos/install/
+
+//Executable for running MPI programs.
+MPIEXEC_EXECUTABLE:FILEPATH=/opt/scorec/spack/rhel9/v0201_4/install/linux-rhel9-x86_64/gcc-12.3.0/mpich-4.1.1-xpoyz4tqgfxtrm6m7qq67q4ccp5pnlre/bin/mpiexec
+
+//Maximum number of processors available to run MPI applications.
+MPIEXEC_MAX_NUMPROCS:STRING=10
+
+//Flag used by MPI to specify the number of processes for mpiexec;
+// the next option will be the number of processes.
+MPIEXEC_NUMPROC_FLAG:STRING=-n
+
+//These flags will be placed after all flags passed to mpiexec.
+MPIEXEC_POSTFLAGS:STRING=
+
+//These flags will be directly before the executable that is being
+// run by mpiexec.
+MPIEXEC_PREFLAGS:STRING=
+
+//MPI CXX additional include directories
+MPI_CXX_ADDITIONAL_INCLUDE_DIRS:STRING=
+
+//MPI compiler for CXX
+MPI_CXX_COMPILER:FILEPATH=/opt/scorec/spack/rhel9/v0201_4/install/linux-rhel9-x86_64/gcc-12.3.0/mpich-4.1.1-xpoyz4tqgfxtrm6m7qq67q4ccp5pnlre/bin/mpicxx
+
+//MPI CXX compiler wrapper include directories
+MPI_CXX_COMPILER_INCLUDE_DIRS:STRING=
+
+//MPI CXX compilation definitions
+MPI_CXX_COMPILE_DEFINITIONS:STRING=
+
+//MPI CXX compilation flags
+MPI_CXX_COMPILE_OPTIONS:STRING=
+
+//MPI CXX linker flags
+MPI_CXX_LINK_FLAGS:STRING=
+
+//If true, the MPI-2 C++ bindings are disabled using definitions.
+MPI_CXX_SKIP_MPICXX:BOOL=FALSE
+
+//MPI C additional include directories
+MPI_C_ADDITIONAL_INCLUDE_DIRS:STRING=
+
+//MPI compiler for C
+MPI_C_COMPILER:FILEPATH=/opt/scorec/spack/rhel9/v0201_4/install/linux-rhel9-x86_64/gcc-12.3.0/mpich-4.1.1-xpoyz4tqgfxtrm6m7qq67q4ccp5pnlre/bin/mpicc
+
+//MPI C compiler wrapper include directories
+MPI_C_COMPILER_INCLUDE_DIRS:STRING=
+
+//MPI C compilation definitions
+MPI_C_COMPILE_DEFINITIONS:STRING=
+
+//MPI C compilation flags
+MPI_C_COMPILE_OPTIONS:STRING=
+
+//MPI C linker flags
+MPI_C_LINK_FLAGS:STRING=
 
 //The directory containing a CMake configuration file for Omega_h.
-Omega_h_DIR:PATH=Omega_h_DIR-NOTFOUND
+Omega_h_DIR:PATH=/lore/mersoj2/laces-software/build/ADA89/omega_h/install/lib/cmake/Omega_h
 
 //No help, variable specified on the command line.
-Omega_h_ROOT:UNINITIALIZED=/lore/paudea/build/ADA89/omega_h/install/
+Omega_h_ROOT:UNINITIALIZED=/lore/mersoj2/laces-software/build/ADA89/omega_h/install/
 
 //No help, variable specified on the command line.
 Omega_h_USE_CUDA:UNINITIALIZED=ON
@@ -227,17 +297,32 @@ Omega_h_USE_CUDA:UNINITIALIZED=ON
 //No help, variable specified on the command line.
 Omega_h_USE_Kokkos:UNINITIALIZED=ON
 
+//Path to a file.
+ZLIB_INCLUDE_DIR:PATH=/opt/scorec/spack/rhel9/v0201_4/install/linux-rhel9-x86_64/gcc-7.4.0/zlib-1.2.13-mvjz5oiydrl3oey4yh7fh6mvpp5jjsfd/include
+
+//Path to a library.
+ZLIB_LIBRARY_DEBUG:FILEPATH=ZLIB_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+ZLIB_LIBRARY_RELEASE:FILEPATH=/opt/scorec/spack/rhel9/v0201_4/install/linux-rhel9-x86_64/gcc-7.4.0/zlib-1.2.13-mvjz5oiydrl3oey4yh7fh6mvpp5jjsfd/lib/libz.so
+
 //Value Computed by CMake
 mfem-cmake-project_BINARY_DIR:STATIC=/lore/paudea/misc/RBFinterpolation/MLS-rbf-based-Interpolation/build
 
 //Value Computed by CMake
 mfem-cmake-project_SOURCE_DIR:STATIC=/lore/paudea/misc/RBFinterpolation/MLS-rbf-based-Interpolation
 
-//No help, variable specified on the command line.
-pcms_ROOT:UNINITIALIZED=/lore/paudea/pcms-coupler/pcms-install/
+//The directory containing a CMake configuration file for pcms.
+pcms_DIR:PATH=/lore/mersoj2/laces-software/build/ADA89/pcms/install/lib64/cmake/pcms
 
 //No help, variable specified on the command line.
-perfstubs_DIR:UNINITIALIZED=/lore/paudea/build/perfstubs/install/lib64/cmake/
+pcms_ROOT:UNINITIALIZED=/lore/mersoj2/laces-software/build/ADA89/pcms/install/
+
+//No help, variable specified on the command line.
+perfstubs_DIR:UNINITIALIZED=/lore/mersoj2/laces-software/build/perfstubs/install/lib64/cmake/
+
+//The directory containing a CMake configuration file for redev.
+redev_DIR:PATH=/lore/mersoj2/laces-software/build/ADA89/redev/install/lib64/cmake/redev
 
 
 ########################
@@ -280,6 +365,7 @@ CMAKE_CXX_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_CXX_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS_RELWITHDEBINFO
 CMAKE_CXX_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
+CMAKE_CXX_STANDARD_DEFAULT:INTERNAL=98
 //ADVANCED property for variable: CMAKE_C_COMPILER
 CMAKE_C_COMPILER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_COMPILER_AR
@@ -389,4 +475,62 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Details about finding ADIOS2
+FIND_PACKAGE_MESSAGE_DETAILS_ADIOS2:INTERNAL=[/lore/mersoj2/laces-software/build/adios2/install/lib64/cmake/adios2/adios2-config.cmake][cfound components: C CXX MPI ][v2.9.0.343()]
+//Details about finding MPI
+FIND_PACKAGE_MESSAGE_DETAILS_MPI:INTERNAL=[TRUE][TRUE][c ][v4.0()]
+//Details about finding MPI_C
+FIND_PACKAGE_MESSAGE_DETAILS_MPI_C:INTERNAL=[/opt/scorec/spack/rhel9/v0201_4/install/linux-rhel9-x86_64/gcc-12.3.0/mpich-4.1.1-xpoyz4tqgfxtrm6m7qq67q4ccp5pnlre/bin/mpicc][TRUE][v4.0()]
+//Details about finding MPI_CXX
+FIND_PACKAGE_MESSAGE_DETAILS_MPI_CXX:INTERNAL=[/opt/scorec/spack/rhel9/v0201_4/install/linux-rhel9-x86_64/gcc-12.3.0/mpich-4.1.1-xpoyz4tqgfxtrm6m7qq67q4ccp5pnlre/bin/mpicxx][TRUE][v4.0()]
+//Details about finding ZLIB
+FIND_PACKAGE_MESSAGE_DETAILS_ZLIB:INTERNAL=[/opt/scorec/spack/rhel9/v0201_4/install/linux-rhel9-x86_64/gcc-7.4.0/zlib-1.2.13-mvjz5oiydrl3oey4yh7fh6mvpp5jjsfd/lib/libz.so][/opt/scorec/spack/rhel9/v0201_4/install/linux-rhel9-x86_64/gcc-7.4.0/zlib-1.2.13-mvjz5oiydrl3oey4yh7fh6mvpp5jjsfd/include][v1.2.13()]
+//ADVANCED property for variable: MPIEXEC_EXECUTABLE
+MPIEXEC_EXECUTABLE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPIEXEC_MAX_NUMPROCS
+MPIEXEC_MAX_NUMPROCS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPIEXEC_NUMPROC_FLAG
+MPIEXEC_NUMPROC_FLAG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPIEXEC_POSTFLAGS
+MPIEXEC_POSTFLAGS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPIEXEC_PREFLAGS
+MPIEXEC_PREFLAGS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_CXX_ADDITIONAL_INCLUDE_DIRS
+MPI_CXX_ADDITIONAL_INCLUDE_DIRS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_CXX_COMPILER
+MPI_CXX_COMPILER-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_CXX_COMPILER_INCLUDE_DIRS
+MPI_CXX_COMPILER_INCLUDE_DIRS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_CXX_COMPILE_DEFINITIONS
+MPI_CXX_COMPILE_DEFINITIONS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_CXX_COMPILE_OPTIONS
+MPI_CXX_COMPILE_OPTIONS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_CXX_LINK_FLAGS
+MPI_CXX_LINK_FLAGS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_CXX_SKIP_MPICXX
+MPI_CXX_SKIP_MPICXX-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_C_ADDITIONAL_INCLUDE_DIRS
+MPI_C_ADDITIONAL_INCLUDE_DIRS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_C_COMPILER
+MPI_C_COMPILER-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_C_COMPILER_INCLUDE_DIRS
+MPI_C_COMPILER_INCLUDE_DIRS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_C_COMPILE_DEFINITIONS
+MPI_C_COMPILE_DEFINITIONS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_C_COMPILE_OPTIONS
+MPI_C_COMPILE_OPTIONS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: MPI_C_LINK_FLAGS
+MPI_C_LINK_FLAGS-ADVANCED:INTERNAL=1
+//Result of TRY_COMPILE
+MPI_RESULT_CXX_test_mpi_MPICXX:INTERNAL=TRUE
+//Result of TRY_COMPILE
+MPI_RESULT_CXX_test_mpi_normal:INTERNAL=TRUE
+//Result of TRY_COMPILE
+MPI_RESULT_C_test_mpi_normal:INTERNAL=TRUE
+//ADVANCED property for variable: ZLIB_INCLUDE_DIR
+ZLIB_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ZLIB_LIBRARY_DEBUG
+ZLIB_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ZLIB_LIBRARY_RELEASE
+ZLIB_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 
