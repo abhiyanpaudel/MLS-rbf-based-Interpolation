@@ -8,7 +8,7 @@
 using namespace Omega_h;
 using namespace pcms;
 
-Write<Real> mls_interpolation(const Reals source_coordinates, const Reals target_coordinates, const SupportResults& support, const LO& dim, const Real& cutoff_radius){
+Write<Real> mls_interpolation(const Reals source_values, const Reals source_coordinates, const Reals target_coordinates, const SupportResults& support, const LO& dim, const Real& cutoff_radius){
     const auto nvertices_source = source_coordinates.size()/dim;    
     const auto nvertices_target = target_coordinates.size()/dim;
   
@@ -88,7 +88,7 @@ Write<Real> mls_interpolation(const Reals source_coordinates, const Reals target
 
 	ScratchVecView targetMonomialVec(team.team_scratch(0), 6);
 	
-	ScratchVecView exactSupportValues(team.team_scratch(0), nsupports);
+	//ScratchVecView exactSupportValues(team.team_scratch(0), nsupports);
 
 	ScratchVecView result(team.team_scratch(0), nsupports);
 	
@@ -116,17 +116,17 @@ Write<Real> mls_interpolation(const Reals source_coordinates, const Reals target
 
 
 	
-        Kokkos::parallel_for(Kokkos::TeamThreadRange(team, nsupports), [=](int j){ 
-	   for (int k = 0; k < 6; ++k){
-		V(j, k) = 0;
-		
-	   }
+  //      Kokkos::parallel_for(Kokkos::TeamThreadRange(team, nsupports), [=](int j){ 
+	//   for (int k = 0; k < 6; ++k){
+	//	V(j, k) = 0;
+	//	
+	//   }
 
-	   exactSupportValues(j) = 0;
-	   result(j) = 0;
-	   Phi(j) = 0;
+	//   exactSupportValues(j) = 0;
+	//   result(j) = 0;
+	//   Phi(j) = 0;
 
-	});
+	//});
 
 	Coord target_point;
     
@@ -175,11 +175,11 @@ Write<Real> mls_interpolation(const Reals source_coordinates, const Reals target
 	    Coord source_point;
 	    source_point.x = local_source_points(i,0);
 	    source_point.y = local_source_points(i,1);
-	    exactSupportValues(i) = func(source_point);
+	    //exactSupportValues(i) = func(source_point);
 	});
 
 	double tgt_value = 0; 
-        dot_product(team, result, exactSupportValues, tgt_value);
+        dot_product(team, result, source_values, tgt_value);
        if (team.team_rank() == 0){        
            approx_target_values[i] = tgt_value;
         }

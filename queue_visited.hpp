@@ -8,7 +8,7 @@
 #include <Omega_h_for.hpp>
 #include <Omega_h_reduce.hpp>
 #include <Omega_h_build.hpp>
-#define MAX_SIZE 200
+#define MAX_SIZE 500
 using namespace std;
 using namespace Omega_h;
 

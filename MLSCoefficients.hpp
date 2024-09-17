@@ -3,6 +3,7 @@
 
 #include "points.hpp"
 #include <cmath>
+#include <Omega_h_macros.h>
 
 
 #define PI_M 3.14159265358979323846 
@@ -121,10 +122,10 @@ void MatVecMul(member_type team, ScratchVecView vector, ScratchMatView matrix, S
 
 // dot product 
 KOKKOS_INLINE_FUNCTION
-void dot_product(member_type team, ScratchVecView result_sub, ScratchVecView exactSupportValues_sub,double& target_value){
+void dot_product(member_type team, ScratchVecView result_sub, Omega_h::Reals exactSupportValues_sub,double& target_value){
   int N = result_sub.extent(0); 
    for ( int j = 0; j < N; ++j){
-      target_value += result_sub(j) * exactSupportValues_sub(j);
+      target_value += result_sub(j) * exactSupportValues_sub[j];
   }
 }
 
