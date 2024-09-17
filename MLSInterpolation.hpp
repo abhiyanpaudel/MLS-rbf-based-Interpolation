@@ -168,10 +168,11 @@ Write<Real> mls_interpolation(const Reals source_values,
         MatVecMul(team, targetMonomialVec, resultant_matrix, result);
         team.team_barrier();
 
-        Kokkos::parallel_for(Kokkos::TeamThreadRange(team, nsupports),
-                             [=](const int i) {
-                               SupportValues(i) = source_values[support.supports_idx[start_ptr + i]];
-                             });
+        Kokkos::parallel_for(
+            Kokkos::TeamThreadRange(team, nsupports), [=](const int i) {
+              SupportValues(i) =
+                  source_values[support.supports_idx[start_ptr + i]];
+            });
 
         double tgt_value = 0;
         dot_product(team, result, SupportValues, tgt_value);
