@@ -12,7 +12,7 @@ Write<Real> mls_interpolation(const Reals source_values,
                               const Reals source_coordinates,
                               const Reals target_coordinates,
                               const SupportResults& support, const LO& dim,
-                              const Real& cutoff_radius) {
+                              Write<Real> radii2) {
   const auto nvertices_source = source_coordinates.size() / dim;
   const auto nvertices_target = target_coordinates.size() / dim;
 
@@ -142,11 +142,10 @@ Write<Real> mls_interpolation(const Reals source_values,
 
         team.team_barrier();
 
-        Kokkos::parallel_for(Kokkos::TeamThreadRange(team, nsupports),
-                             [=](int j) {
-                               PhiVector(Phi, target_point, local_source_points,
-                                         j, cutoff_radius);
-                             });
+        Kokkos::parallel_for(
+            Kokkos::TeamThreadRange(team, nsupports), [=](int j) {
+              PhiVector(Phi, target_point, local_source_points, j, radii2[i]);
+            });
 
         team.team_barrier();
 
